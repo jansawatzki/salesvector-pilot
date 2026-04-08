@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SalesVector — Demo</title>
+  <script>(function(){if(window.location.hash!=="#sv_mK9xP3rL7nQ2w"){document.documentElement.style.display="none";window.onload=function(){document.body.innerHTML="";document.title="";};}})()</script>
+  <style>
+    #pw-overlay { position:fixed; inset:0; background:#0f1117; z-index:9999; display:flex; align-items:center; justify-content:center; }
+    #pw-box { background:#1a1d27; border:1px solid #2e3147; border-radius:12px; padding:36px 40px; width:320px; text-align:center; }
+    #pw-box h2 { font-size:16px; font-weight:700; color:#e2e4ed; margin-bottom:6px; }
+    #pw-box p { font-size:13px; color:#8b90a8; margin-bottom:20px; }
+    #pw-input { width:100%; background:#0f1117; border:1px solid #2e3147; border-radius:6px; padding:10px 14px; color:#e2e4ed; font-size:14px; outline:none; margin-bottom:12px; text-align:center; letter-spacing:.1em; }
+    #pw-input:focus { border-color:#6c63ff; }
+    #pw-btn { width:100%; background:#6c63ff; border:none; border-radius:6px; padding:10px; color:#fff; font-size:14px; font-weight:600; cursor:pointer; }
+    #pw-btn:hover { background:#5a52d5; }
+    #pw-error { font-size:12px; color:#ff6b6b; margin-top:8px; min-height:16px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e4ed; line-height: 1.65; font-size: 15px; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    header { padding: 48px 24px 36px; max-width: 860px; margin: 0 auto; }
+    header .label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6c63ff; margin-bottom: 12px; }
+    header h1 { font-size: 26px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 10px; }
+    header p { color: #8b90a8; font-size: 14px; max-width: 640px; }
+
+    .section { padding: 0 0 60px; }
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8b90a8; margin-bottom: 28px; padding-bottom: 10px; border-bottom: 1px solid #1e2136; }
+    .section-title span { color: #6c63ff; }
+
+    /* ── DEMO LAYOUT ── */
+    .demo-layout { display: grid; grid-template-columns: 320px 1fr; gap: 48px; align-items: start; }
+    @media (max-width: 720px) { .demo-layout { grid-template-columns: 1fr; } }
+
+    /* ── PHONE ── */
+    .phone-outer { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .phone {
+      width: 300px;
+      background: #000;
+      border-radius: 46px;
+      border: 9px solid #1c1c1e;
+      box-shadow: 0 0 0 1px #2e2e30, 0 28px 70px rgba(0,0,0,.75), inset 0 0 0 1px #3a3a3c;
+      position: relative; overflow: hidden;
+    }
+    /* Dynamic island */
+    .phone::before {
+      content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      width: 100px; height: 30px; background: #000;
+      border-radius: 20px; z-index: 20;
+    }
+    .phone-screen {
+      width: 100%; height: 640px;
+      background: #0f1117;
+      overflow: hidden; position: relative;
+    }
+
+    /* Screens container — slides left/right */
+    .screens { display: flex; width: 200%; height: 100%; transition: transform .35s cubic-bezier(.4,0,.2,1); }
+    .screen { width: 50%; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; flex-shrink: 0; padding-top: 48px; }
+    .screen::-webkit-scrollbar { display: none; }
+
+    /* Status bar */
+    .status-bar { position: absolute; top: 0; left: 0; right: 0; height: 48px; z-index: 10; padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: center; background: #0f1117; }
+    .status-bar .time { font-size: 13px; font-weight: 700; color: #e2e4ed; }
+    .status-bar .icons { font-size: 11px; color: #e2e4ed; display: flex; gap: 5px; align-items: center; }
+
+    /* Nav bar */
+    .phone-nav { padding: 8px 16px 10px; border-bottom: 1px solid #1e2136; display: flex; align-items: center; justify-content: space-between; }
+    .phone-nav .app-name { font-size: 15px; font-weight: 700; color: #6c63ff; }
+    .phone-nav .rep-badge { width: 30px; height: 30px; border-radius: 50%; background: #1a1d27; border: 1px solid #2e3147; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #6c63ff; }
+
+    /* Customer header on briefing screen */
+    .phone-cust-header { padding: 14px 16px 10px; }
+    .phone-cust-header .back { font-size: 10px; color: #6c63ff; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+    .phone-cust-header h2 { font-size: 15px; font-weight: 700; color: #e2e4ed; line-height: 1.25; margin-bottom: 3px; }
+    .phone-cust-header .sub { font-size: 11px; color: #8b90a8; }
+
+    /* Briefing play card inside phone */
+    .phone-play-card { margin: 10px 12px; background: #13162b; border: 1px solid #2e3147; border-radius: 14px; overflow: hidden; }
+    .phone-play-top { padding: 14px 14px 10px; display: flex; align-items: center; gap: 12px; }
+    .phone-play-icon { width: 46px; height: 46px; border-radius: 50%; background: #6c63ff; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; cursor: pointer; transition: background .15s, transform .1s; box-shadow: 0 4px 16px rgba(108,99,255,.45); user-select: none; }
+    .phone-play-icon:active { transform: scale(.94); }
+    .phone-play-icon.playing { background: #00d4aa; box-shadow: 0 4px 16px rgba(0,212,170,.4); }
+    .phone-play-meta .title { font-size: 13px; font-weight: 600; color: #e2e4ed; }
+    .phone-play-meta .sub { font-size: 10px; color: #8b90a8; margin-top: 2px; }
+    .phone-progress { padding: 0 14px 12px; }
+    .phone-prog-bar { height: 3px; background: #2e3147; border-radius: 2px; overflow: hidden; }
+    .phone-prog-fill { height: 100%; background: #6c63ff; width: 0%; transition: width .3s linear; border-radius: 2px; }
+    .phone-prog-time { display: flex; justify-content: space-between; font-size: 10px; color: #8b90a8; margin-top: 5px; }
+
+    /* Open items */
+    .phone-sec-label { font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #8b90a8; padding: 10px 16px 4px; }
+    .phone-open-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 16px; border-bottom: 1px solid #1a1d27; }
+    .phone-open-item .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .dot-red { background: #ff6b6b; }
+    .dot-yellow { background: #f0a500; }
+    .phone-open-item .item-text { font-size: 11px; color: #c4c8d8; line-height: 1.4; }
+    .phone-open-item .item-date { font-size: 9px; color: #6c63ff; margin-top: 1px; }
+
+    /* Visit history */
+    .phone-visit { padding: 9px 16px; border-bottom: 1px solid #1a1d27; }
+    .phone-visit .v-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .phone-visit .v-date { font-size: 9px; color: #6c63ff; font-weight: 600; }
+    .phone-visit .v-type { font-size: 9px; color: #8b90a8; background: #1a1d27; padding: 1px 6px; border-radius: 4px; }
+    .phone-visit .v-text { font-size: 10px; color: #8b90a8; line-height: 1.4; }
+
+    /* Bottom tab bar (briefing screen) */
+    .phone-tabs { display: flex; border-top: 1px solid #1e2136; background: #0f1117; }
+    .phone-tab { flex: 1; padding: 10px 4px 12px; text-align: center; cursor: pointer; border: none; background: none; color: #8b90a8; font-size: 9px; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .phone-tab.active { color: #6c63ff; }
+    .phone-tab svg { width: 18px; height: 18px; }
+
+    /* ── DIKTAT SCREEN ── */
+    .diktat-screen { display: flex; flex-direction: column; }
+    .diktat-top { padding: 8px 16px 10px; border-bottom: 1px solid #1e2136; display: flex; align-items: center; gap: 10px; }
+    .diktat-back { font-size: 12px; color: #6c63ff; cursor: pointer; background: none; border: none; font-family: inherit; padding: 0; }
+    .diktat-top h3 { font-size: 13px; font-weight: 600; color: #e2e4ed; }
+    .diktat-top .cust-chip { margin-left: auto; font-size: 10px; color: #8b90a8; background: #1a1d27; padding: 3px 8px; border-radius: 6px; }
+
+    .rec-area { padding: 20px 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .rec-btn {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: #ff3b30; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      box-shadow: 0 0 0 10px rgba(255,59,48,.12), 0 8px 24px rgba(255,59,48,.4);
+      transition: transform .1s, box-shadow .1s;
+    }
+    .rec-btn:active { transform: scale(.93); }
+    .rec-btn.recording {
+      background: #ff3b30;
+      box-shadow: 0 0 0 16px rgba(255,59,48,.08), 0 8px 24px rgba(255,59,48,.4);
+      animation: rec-pulse 1.5s infinite;
+    }
+    @keyframes rec-pulse {
+      0%,100% { box-shadow: 0 0 0 10px rgba(255,59,48,.12), 0 8px 24px rgba(255,59,48,.4); }
+      50%      { box-shadow: 0 0 0 18px rgba(255,59,48,.05), 0 8px 24px rgba(255,59,48,.4); }
+    }
+    .rec-label { font-size: 11px; color: #8b90a8; }
+    .rec-timer { font-size: 26px; font-weight: 700; color: #ff3b30; letter-spacing: .05em; font-variant-numeric: tabular-nums; }
+
+    .transcript-box { margin: 0 12px; background: #13162b; border: 1px solid #2e3147; border-radius: 10px; padding: 12px 14px; min-height: 64px; font-size: 11px; color: #8b90a8; line-height: 1.65; font-style: italic; }
+    .cursor-blink { display: inline-block; width: 1px; height: 12px; background: #6c63ff; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 1px; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* Structured result */
+    .result-box { margin: 8px 12px; background: #1a1d27; border: 1px solid #2e3147; border-radius: 10px; overflow: hidden; display: none; }
+    .result-box.visible { display: block; }
+    .result-header { padding: 10px 14px; background: #0a2a1a; border-bottom: 1px solid #2e3147; display: flex; align-items: center; gap: 8px; }
+    .result-header .badge { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #00d4aa; background: rgba(0,212,170,.1); padding: 2px 7px; border-radius: 4px; }
+    .result-header span { font-size: 11px; color: #00d4aa; font-weight: 600; }
+    .result-field { padding: 8px 14px; border-bottom: 1px solid #1e2136; }
+    .result-field:last-child { border-bottom: none; }
+    .result-field .lbl { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #6c63ff; margin-bottom: 2px; }
+    .result-field .val { font-size: 11px; color: #c4c8d8; line-height: 1.45; }
+    .result-field .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+    .tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; }
+    .tag-green { background: rgba(0,212,170,.1); color: #00d4aa; }
+    .tag-purple { background: rgba(108,99,255,.12); color: #6c63ff; }
+
+    .diktat-actions { padding: 8px 12px 12px; display: flex; gap: 8px; }
+    .btn-save { flex: 1; padding: 10px; background: #6c63ff; border: none; border-radius: 10px; font-size: 12px; font-weight: 600; color: #fff; cursor: pointer; font-family: inherit; }
+    .btn-save:active { background: #7c74ff; }
+    .btn-discard { padding: 10px 14px; background: #1a1d27; border: 1px solid #2e3147; border-radius: 10px; font-size: 12px; color: #8b90a8; cursor: pointer; font-family: inherit; }
+
+    /* ── RIGHT SIDE INFO ── */
+    .info-panel { padding-top: 4px; }
+    .info-panel h3 { font-size: 14px; font-weight: 700; color: #e2e4ed; margin-bottom: 6px; }
+    .info-panel p { font-size: 13px; color: #8b90a8; line-height: 1.65; margin-bottom: 16px; }
+    .data-point { background: #1a1d27; border: 1px solid #2e3147; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; }
+    .data-point .dp-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #6c63ff; margin-bottom: 4px; }
+    .data-point .dp-val { font-size: 13px; color: #e2e4ed; }
+    .data-point .dp-sub { font-size: 11px; color: #8b90a8; margin-top: 2px; }
+
+    /* ── BEFORE / AFTER CHARTS ── */
+    .viz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 600px) { .viz-grid { grid-template-columns: 1fr; } }
+    .viz-panel { background: #1a1d27; border: 1px solid #2e3147; border-radius: 10px; padding: 20px; }
+    .viz-panel h3 { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+    .viz-panel.before h3 { color: #ff6b6b; }
+    .viz-panel.after h3 { color: #00d4aa; }
+    .chart-wrap { height: 260px; position: relative; }
+    .viz-caption { font-size: 12px; color: #8b90a8; margin-top: 12px; line-height: 1.5; }
+    .snapshot { background: #1a1d27; border: 1px solid #2e3147; border-left: 3px solid #00d4aa; border-radius: 8px; padding: 16px 20px; margin-bottom: 28px; }
+    .snapshot h3 { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #00d4aa; margin-bottom: 10px; }
+    .snapshot table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .snapshot td, .snapshot th { padding: 6px 10px; border-bottom: 1px solid #2e3147; text-align: left; }
+    .snapshot th { color: #8b90a8; font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+    .snapshot tr:last-child td { border-bottom: none; }
+    .ok { color: #00d4aa; } .no { color: #ff6b6b; } .maybe { color: #f0a500; }
+    .audio-controls { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .ctrl-row { display: flex; align-items: center; gap: 8px; }
+    .ctrl-label { font-size: 10px; color: #8b90a8; text-transform: uppercase; letter-spacing: .06em; width: 90px; flex-shrink: 0; }
+    .ctrl-row select { flex: 1; background: #0f1117; border: 1px solid #2e3147; color: #e2e4ed; font-size: 12px; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+    .ctrl-row input[type=range] { flex: 1; accent-color: #6c63ff; cursor: pointer; }
+    .ctrl-val { font-size: 11px; color: #6c63ff; width: 28px; text-align: right; }
+    .impact-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; }
+    @media (max-width: 520px) { .impact-strip { grid-template-columns: 1fr 1fr; } }
+    .impact-box { background: #1a1d27; border: 1px solid #2e3147; border-radius: 8px; padding: 14px 16px; }
+    .impact-box .num { font-size: 24px; font-weight: 700; color: #00d4aa; letter-spacing: -.02em; }
+    .impact-box .lbl { font-size: 11px; color: #8b90a8; margin-top: 2px; }
+
+    footer { text-align: center; padding: 32px 24px; color: #3a3e52; font-size: 12px; border-top: 1px solid #1e2136; margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<div id="pw-overlay">
+  <div id="pw-box">
+    <h2>SalesVector Demo</h2>
+    <p>Bitte Passwort eingeben</p>
+    <input id="pw-input" type="password" placeholder="Passwort" onkeydown="if(event.key==='Enter')checkPw()" autofocus>
+    <button id="pw-btn" onclick="checkPw()">Weiter</button>
+    <div id="pw-error"></div>
+  </div>
+</div>
+
+<header>
+  <div class="label">SalesVector · Demo · März 2026</div>
+  <h1>Was SalesVector kann — aus echten Delker-Daten</h1>
+  <p>Patrick Kreutz, Außendienstler bei Delker. Nächster Termin: TS Technologie + Service GmbH. Echte Besuchsdaten, echte KI-Stimme.</p>
+</header>
+
+<div class="container">
+
+<!-- ===== SECTION 1: INTERACTIVE PHONE ===== -->
+<div class="section">
+  <div class="section-title"><span>01 + 02</span> — Briefing vor dem Besuch · Diktat danach</div>
+
+  <div class="demo-layout">
+
+    <!-- PHONE -->
+    <div class="phone-outer">
+      <div class="phone">
+        <!-- Status bar (always on top) -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="icons">
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><rect x="0" y="3" width="3" height="7" rx="1"/><rect x="4" y="2" width="3" height="8" rx="1"/><rect x="8" y="0" width="3" height="10" rx="1"/><rect x="12" y="0" width="2" height="10" rx="1" opacity=".3"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor"><path d="M7 2C4.5 2 2.3 3 0.8 4.7L2.2 6.1C3.3 4.8 5 4 7 4s3.7.8 4.8 2.1l1.4-1.4C11.7 3 9.5 2 7 2zM7 6c-1 0-1.9.4-2.6 1L7 10l2.6-3C8.9 6.4 8 6 7 6zM0 1.4L1.4 2.8C3.1 1 5 0 7 0s3.9 1 5.6 2.8L14 1.4C11.9-.1 9.6-1 7 0-1 0-1.4.4C4.1-.1 1.9.4 0 1.4z"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="currentColor"><rect x="0" y="1" width="18" height="8" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="1" y="2" width="14" height="6" rx="1.5"/><rect x="19" y="3" width="3" height="4" rx="1" opacity=".5"/></svg>
+          </div>
+        </div>
+
+        <div class="phone-screen">
+          <div class="screens" id="screens">
+
+            <!-- ── SCREEN 1: BRIEFING ── -->
+            <div class="screen" id="screen-briefing">
+              <div class="phone-nav">
+                <span class="app-name">SalesVector</span>
+                <div class="rep-badge">PK</div>
+              </div>
+
+              <div class="phone-cust-header">
+                <div class="back">‹ Meine Kunden</div>
+                <h2>TS Technologie + Service GmbH</h2>
+                <div class="sub">Mülheim a.d.R. · 36 Besuche letztes Jahr</div>
+              </div>
+
+              <!-- Play card -->
+              <div class="phone-play-card">
+                <div class="phone-play-top">
+                  <div class="phone-play-icon" id="phonePlayBtn" onclick="toggleAudio()">▶</div>
+                  <div class="phone-play-meta">
+                    <div class="title">Briefing abspielen</div>
+                    <div class="sub">Markus Walter · Einkaufsleitung</div>
+                  </div>
+                </div>
+                <div class="phone-progress">
+                  <div class="phone-prog-bar"><div class="phone-prog-fill" id="phoneProgFill"></div></div>
+                  <div class="phone-prog-time">
+                    <span id="phoneTimeElapsed">0:00</span>
+                    <span id="phoneTotalTime">1:30</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Open items -->
+              <div class="phone-sec-label">Offene Punkte (2)</div>
+              <div class="phone-open-item">
+                <div class="dot dot-red"></div>
+                <div>
+                  <div class="item-text">Sägeblatt-Reklamation klären — falsche Ware geliefert</div>
+                  <div class="item-date">Seit 03.03. · überfällig</div>
+                </div>
+              </div>
+              <div class="phone-open-item">
+                <div class="dot dot-yellow"></div>
+                <div>
+                  <div class="item-text">Spind-Angebot (2er) finalisieren &amp; schicken</div>
+                  <div class="item-date">Seit 26.02. · fällig heute</div>
+                </div>
+              </div>
+
+              <!-- Visit history -->
+              <div class="phone-sec-label">Letzte Besuche</div>
+              <div class="phone-visit">
+                <div class="v-header">
+                  <span class="v-date">04.03.2026 · 1:15h</span>
+                  <span class="v-type">Kontaktpflege</span>
+                </div>
+                <div class="v-text">Angebote nachverfolgt, offene Anfragen aller Abteilungen besprochen. AP: Markus Walter.</div>
+              </div>
+              <div class="phone-visit">
+                <div class="v-header">
+                  <span class="v-date">03.03.2026 · 1:00h</span>
+                  <span class="v-type">Aufnahme Bedarf</span>
+                </div>
+                <div class="v-text">Falsch bestellte Sägeblätter. Klärung läuft. AP: Adisa Berisha.</div>
+              </div>
+              <div class="phone-visit">
+                <div class="v-header">
+                  <span class="v-date">26.02.2026 · 1:30h</span>
+                  <span class="v-type">Nachfassen Angebot</span>
+                </div>
+                <div class="v-text">Angebot überarbeitet: 2er-Spinde statt 3er. AP: Jörg Kors, Technik.</div>
+              </div>
+              <div class="phone-visit">
+                <div class="v-header">
+                  <span class="v-date">23.02.2026 · 1:00h</span>
+                  <span class="v-type">Kontaktpflege</span>
+                </div>
+                <div class="v-text">Übergabe der Akkumaschinen. Offene Angebote besprochen.</div>
+              </div>
+
+              <!-- Tab bar -->
+              <div class="phone-tabs">
+                <button class="phone-tab active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                  Briefing
+                </button>
+                <button class="phone-tab" onclick="switchToDiktat()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+                  Diktat
+                </button>
+                <button class="phone-tab">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Verlauf
+                </button>
+              </div>
+            </div><!-- /screen-briefing -->
+
+            <!-- ── SCREEN 2: DIKTAT ── -->
+            <div class="screen" id="screen-diktat">
+              <div class="diktat-top">
+                <button class="diktat-back" onclick="switchToBriefing()">‹</button>
+                <h3>Besuch erfassen</h3>
+                <span class="cust-chip">TS Technologie</span>
+              </div>
+
+              <div class="rec-area">
+                <div class="rec-btn" id="recBtn" onclick="toggleRecording()">🎙</div>
+                <div class="rec-timer" id="recTimer">0:00</div>
+                <div class="rec-label" id="recLabel">Tippen zum Aufnehmen</div>
+              </div>
+
+              <div class="transcript-box" id="transcriptBox">
+                <span id="transcriptText"></span><span class="cursor-blink" id="cursor" style="display:none;"></span>
+              </div>
+
+              <div class="result-box" id="resultBox">
+                <div class="result-header">
+                  <span class="badge">KI-Ergebnis</span>
+                  <span>Strukturierter Besuchsbericht</span>
+                </div>
+                <div class="result-field">
+                  <div class="lbl">THEMA</div>
+                  <div class="val">Sägeblatt-Reklamation geklärt, richtige Ware wird nächste Woche geliefert. Spind-Angebot (2er) übergeben, Walter prüft bis Freitag. Neue Anfrage: Sicherheitsschuhe für Produktion.</div>
+                </div>
+                <div class="result-field">
+                  <div class="lbl">VEREINBARUNG</div>
+                  <div class="val">Lieferung korrekter Sägeblätter KW 13. Angebot Sicherheitsschuhe bis Fr. 20.03. Rückruf vor Folgetermin.</div>
+                </div>
+                <div class="result-field">
+                  <div class="lbl">Dauer</div>
+                  <div class="val">0,75 Stunden</div>
+                </div>
+                <div class="result-field">
+                  <div class="lbl">Flags</div>
+                  <div class="tags">
+                    <span class="tag tag-green">✓ Folgetermin vereinbart</span>
+                    <span class="tag tag-green">✓ weitere ToDos</span>
+                    <span class="tag tag-purple">AP: Markus Walter</span>
+                  </div>
+                </div>
+                <div class="result-field">
+                  <div class="lbl">Offene Punkte (neu)</div>
+                  <div class="tags">
+                    <span class="tag tag-purple">Angebot Sicherheitsschuhe bis Fr.</span>
+                    <span class="tag tag-purple">Lieferung Sägeblätter bestätigen</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="diktat-actions" id="diktatActions" style="display:none;">
+                <button class="btn-save" onclick="saveReport()">Speichern</button>
+                <button class="btn-discard" onclick="discardReport()">Verwerfen</button>
+              </div>
+            </div><!-- /screen-diktat -->
+
+          </div><!-- /screens -->
+        </div><!-- /phone-screen -->
+      </div><!-- /phone -->
+    </div>
+
+    <!-- INFO PANEL -->
+    <div class="info-panel">
+      <h3>Aus echten Delker-Daten</h3>
+      <p>Patrick Kreutz hat TS Technologie 224-mal besucht. Alle Inhalte stammen direkt aus den Excel-Testdaten, die Delker bereitgestellt hat.</p>
+
+      <div class="data-point">
+        <div class="dp-label">Hauptansprechpartner</div>
+        <div class="dp-val">Markus Walter</div>
+        <div class="dp-sub">Einkaufsleitung · walter.markus@ts-gruppe.com</div>
+      </div>
+      <div class="data-point">
+        <div class="dp-label">Letzter Besuch</div>
+        <div class="dp-val">4. März 2026</div>
+        <div class="dp-sub">Kontaktpflege · 1:15h · offene Anfragen besprochen</div>
+      </div>
+      <div class="data-point">
+        <div class="dp-label">Offene Punkte aus KI-Extraktion</div>
+        <div class="dp-val">2 überfällig</div>
+        <div class="dp-sub">Sägeblatt-Reklamation + Spind-Angebot</div>
+      </div>
+      <div class="data-point">
+        <div class="dp-label">Besuchsfrequenz</div>
+        <div class="dp-val">36 Besuche in 12 Monaten</div>
+        <div class="dp-sub">~3× pro Monat · wichtigster Delker-Kunde im Test</div>
+      </div>
+      <div class="data-point">
+        <div class="dp-label">Audio-Briefing</div>
+        <div class="dp-val" id="voiceLabel">ElevenLabs · Stimme: Sarah</div>
+        <div class="dp-sub">eleven_multilingual_v2 · generiert aus echten Besuchsdaten</div>
+        <div class="audio-controls">
+          <div class="ctrl-row">
+            <label class="ctrl-label">Stimme</label>
+            <select id="voiceSelect" onchange="changeVoice(this.value)">
+              <option value="daniel">Daniel (männlich)</option>
+              <option value="aria" selected>Sarah (weiblich)</option>
+            </select>
+          </div>
+          <div class="ctrl-row">
+            <label class="ctrl-label">Geschwindigkeit</label>
+            <input type="range" id="speedSlider" min="0.75" max="1.75" step="0.25" value="1.25" oninput="changeSpeed(this.value)">
+            <span class="ctrl-val" id="speedVal">1.25×</span>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top:20px;font-size:12px;color:#6c63ff;">← Tippe im Phone auf <strong>Diktat</strong> um den zweiten Flow zu sehen.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== SECTION 2: BEFORE / AFTER ===== -->
+<div class="section">
+  <div class="section-title"><span>03</span> — Datenqualität: Vorher / Nachher</div>
+
+  <div class="snapshot">
+    <h3>Daten-Snapshot — 4 Testkunden, 490 Berichte</h3>
+    <table>
+      <tr><th>Was</th><th>Befund</th></tr>
+      <tr><td>INFOS / VEREINBARUNG / STAERKE Felder</td><td class="no">100% leer — alles steht im Freitext-Feld THEMA</td></tr>
+      <tr><td>Folgetermine erfasst</td><td class="no">Kaum: 0,6–9% je Kunde — kein funktionierendes Follow-up-Tracking</td></tr>
+      <tr><td>Patrick Kreutz bei THYSSEN (TS Technologies)</td><td class="ok">244 Berichte, 92% ein Vertreter → idealer Pilot</td></tr>
+      <tr><td>Besuchsdauer-Fehler</td><td class="maybe">Max. 155h eingetragen — keine ERP-Validierung</td></tr>
+      <tr><td>Besuchstyp #1</td><td class="maybe">Kontaktpflege (~45%) — bestätigt: Reminder, kein Verkauf</td></tr>
+    </table>
+  </div>
+
+  <div class="viz-grid">
+    <div class="viz-panel before">
+      <h3>Heute — ohne SalesVector</h3>
+      <div class="chart-wrap"><canvas id="chartBefore"></canvas></div>
+      <p class="viz-caption">243 Besuchsberichte bei TS Technologie. Nur THEMA wird befüllt. Vereinbarungen, Folgetermine, Flags — systematisch leer.</p>
+    </div>
+    <div class="viz-panel after">
+      <h3>Mit SalesVector</h3>
+      <div class="chart-wrap"><canvas id="chartAfter"></canvas></div>
+      <p class="viz-caption">Diktat + KI befüllt alle Felder automatisch. Patrick spricht 30 Sekunden, SalesVector schreibt den Bericht.</p>
+    </div>
+  </div>
+
+  <div class="impact-strip">
+    <div class="impact-box"><div class="num">0 → 95%</div><div class="lbl">Vereinbarungen erfasst</div></div>
+    <div class="impact-box"><div class="num">0 → 88%</div><div class="lbl">Folgetermine getrackt</div></div>
+    <div class="impact-box"><div class="num">30 Sek</div><div class="lbl">Einsprechen anstatt Abtippen</div></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+<footer>SalesVector · Demo · März 2026 · Jan Sawatzki & Thomas Bollig</footer>
+
+<script>
+// ── AUDIO PLAYER ──
+const audio = new Audio('briefing_patrick_kreutz_sarah.mp3');
+audio.playbackRate = 1.25;
+
+function toggleAudio() {
+  audio.paused ? audio.play() : audio.pause();
+}
+audio.addEventListener('play', () => {
+  document.getElementById('phonePlayBtn').textContent = '⏹';
+  document.getElementById('phonePlayBtn').classList.add('playing');
+  setInterval(updateAudioProgress, 300);
+});
+audio.addEventListener('pause', () => {
+  document.getElementById('phonePlayBtn').textContent = '▶';
+  document.getElementById('phonePlayBtn').classList.remove('playing');
+});
+audio.addEventListener('ended', () => {
+  document.getElementById('phonePlayBtn').textContent = '▶';
+  document.getElementById('phonePlayBtn').classList.remove('playing');
+  document.getElementById('phoneProgFill').style.width = '100%';
+});
+function updateAudioProgress() {
+  if (!audio.duration) return;
+  document.getElementById('phoneProgFill').style.width = (audio.currentTime / audio.duration * 100) + '%';
+  const s = Math.floor(audio.currentTime);
+  document.getElementById('phoneTimeElapsed').textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  const t = Math.floor(audio.duration);
+  document.getElementById('phoneTotalTime').textContent = `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+}
+function changeVoice(val) {
+  const wasPlaying = !audio.paused;
+  audio.pause();
+  if (val === 'aria') {
+    audio.src = 'briefing_patrick_kreutz_sarah.mp3';
+    document.getElementById('voiceLabel').textContent = 'ElevenLabs · Stimme: Sarah';
+  } else {
+    audio.src = 'briefing_patrick_kreutz.mp3';
+    document.getElementById('voiceLabel').textContent = 'ElevenLabs · Stimme: Daniel';
+  }
+  audio.load();
+  document.getElementById('phoneProgFill').style.width = '0%';
+  document.getElementById('phoneTimeElapsed').textContent = '0:00';
+  document.getElementById('phonePlayBtn').textContent = '▶';
+  document.getElementById('phonePlayBtn').classList.remove('playing');
+  if (wasPlaying) audio.play();
+}
+function changeSpeed(val) {
+  audio.playbackRate = parseFloat(val);
+  document.getElementById('speedVal').textContent = val + '×';
+}
+
+// ── PASSWORD GATE ──
+(function() {
+  if (sessionStorage.getItem('sv_auth') === '1') {
+    document.getElementById('pw-overlay').style.display = 'none';
+  }
+})();
+function checkPw() {
+  const val = document.getElementById('pw-input').value.trim().toLowerCase();
+  if (val === 'delker') {
+    sessionStorage.setItem('sv_auth', '1');
+    document.getElementById('pw-overlay').style.display = 'none';
+  } else {
+    document.getElementById('pw-error').textContent = 'Falsches Passwort.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+// ── SCREEN SWITCHER ──
+function switchToDiktat() {
+  document.getElementById('screens').style.transform = 'translateX(-50%)';
+  audio.pause();
+}
+function switchToBriefing() {
+  document.getElementById('screens').style.transform = 'translateX(0)';
+  resetDiktat();
+}
+
+// ── RECORDING SIMULATION ──
+const DIKTAT_TEXT = `War heute bei TS Technologie, hab mit dem Markus Walter gesprochen, ungefähr ne dreiviertel Stunde. Die Sägeblatt-Sache ist jetzt geklärt, wir schicken die richtigen nächste Woche. Und das Spind-Angebot hab ich ihm dagelassen, er schaut sich das bis Ende der Woche an. Hat außerdem gefragt ob wir auch Sicherheitsschuhe liefern können — ich soll bis Freitag mal ein Angebot machen. Nächster Termin in drei Wochen, ich ruf ihn vorher nochmal kurz an.`;
+
+let recInterval = null;
+let recSeconds = 0;
+let typeInterval = null;
+let charIdx = 0;
+let isRecording = false;
+let isProcessing = false;
+
+function toggleRecording() {
+  if (isProcessing) return;
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+function startRecording() {
+  isRecording = true;
+  recSeconds = 0;
+  charIdx = 0;
+  document.getElementById('transcriptText').textContent = '';
+  document.getElementById('resultBox').classList.remove('visible');
+  document.getElementById('diktatActions').style.display = 'none';
+  document.getElementById('recBtn').classList.add('recording');
+  document.getElementById('recLabel').textContent = 'Tippen zum Stoppen';
+  document.getElementById('cursor').style.display = 'inline-block';
+
+  recInterval = setInterval(() => {
+    recSeconds++;
+    const m = Math.floor(recSeconds / 60);
+    const s = recSeconds % 60;
+    document.getElementById('recTimer').textContent = `${m}:${String(s).padStart(2,'0')}`;
+  }, 1000);
+
+  // Simulate typing transcript
+  typeInterval = setInterval(() => {
+    if (charIdx < DIKTAT_TEXT.length) {
+      document.getElementById('transcriptText').textContent = DIKTAT_TEXT.slice(0, charIdx + 1);
+      charIdx += 3;
+    }
+  }, 60);
+}
+
+function stopRecording() {
+  isRecording = false;
+  isProcessing = true;
+  clearInterval(recInterval);
+  clearInterval(typeInterval);
+  document.getElementById('transcriptText').textContent = DIKTAT_TEXT;
+  document.getElementById('cursor').style.display = 'none';
+  document.getElementById('recBtn').classList.remove('recording');
+  document.getElementById('recBtn').textContent = '⏳';
+  document.getElementById('recLabel').textContent = 'KI verarbeitet…';
+
+  setTimeout(() => {
+    isProcessing = false;
+    document.getElementById('recBtn').textContent = '✓';
+    document.getElementById('recBtn').style.background = '#00d4aa';
+    document.getElementById('recBtn').style.boxShadow = '0 0 0 10px rgba(0,212,170,.12), 0 8px 24px rgba(0,212,170,.35)';
+    document.getElementById('recLabel').textContent = 'Fertig';
+    document.getElementById('resultBox').classList.add('visible');
+    document.getElementById('diktatActions').style.display = 'flex';
+  }, 1800);
+}
+
+function resetDiktat() {
+  clearInterval(recInterval);
+  clearInterval(typeInterval);
+  isRecording = false;
+  isProcessing = false;
+  recSeconds = 0;
+  charIdx = 0;
+  document.getElementById('recTimer').textContent = '0:00';
+  document.getElementById('recBtn').textContent = '🎙';
+  document.getElementById('recBtn').style.background = '#ff3b30';
+  document.getElementById('recBtn').style.boxShadow = '';
+  document.getElementById('recBtn').classList.remove('recording');
+  document.getElementById('recLabel').textContent = 'Tippen zum Aufnehmen';
+  document.getElementById('transcriptText').textContent = '';
+  document.getElementById('cursor').style.display = 'none';
+  document.getElementById('resultBox').classList.remove('visible');
+  document.getElementById('diktatActions').style.display = 'none';
+}
+
+function saveReport() {
+  document.getElementById('recBtn').textContent = '🎙';
+  document.getElementById('recBtn').style.background = '#ff3b30';
+  document.getElementById('recBtn').style.boxShadow = '';
+  document.getElementById('recLabel').textContent = 'Gespeichert ✓';
+  document.getElementById('resultBox').classList.remove('visible');
+  document.getElementById('diktatActions').style.display = 'none';
+  document.getElementById('transcriptText').textContent = '';
+  setTimeout(() => {
+    document.getElementById('recLabel').textContent = 'Tippen zum Aufnehmen';
+    document.getElementById('recTimer').textContent = '0:00';
+  }, 2000);
+}
+
+function discardReport() {
+  resetDiktat();
+}
+
+// ── CHARTS ──
+const FIELDS = ['THEMA', 'VEREINBARUNG', 'INFOS', 'Folgetermin', 'ToDos', 'AP-Rolle', 'STÄRKE', 'SCHWÄCHE'];
+const BEFORE = [99, 0, 0, 0, 0, 0, 0, 0];
+const AFTER  = [99, 95, 85, 88, 82, 90, 58, 52];
+
+const opts = () => ({
+  indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw}%` } } },
+  scales: {
+    x: { min: 0, max: 100, grid: { color: '#1e2136' }, ticks: { color: '#8b90a8', font: { size: 11 }, callback: v => v + '%' } },
+    y: { grid: { display: false }, ticks: { color: '#c4c8d8', font: { size: 12 } } }
+  }
+});
+
+new Chart(document.getElementById('chartBefore'), {
+  type: 'bar',
+  data: { labels: FIELDS, datasets: [{ data: BEFORE, backgroundColor: BEFORE.map(v => v > 0 ? '#ff6b6b' : '#2a1a1a'), borderColor: BEFORE.map(v => v > 0 ? '#ff6b6b' : '#3a2020'), borderWidth: 1, borderRadius: 4 }] },
+  options: opts()
+});
+new Chart(document.getElementById('chartAfter'), {
+  type: 'bar',
+  data: { labels: FIELDS, datasets: [{ data: AFTER, backgroundColor: AFTER.map(v => v > 80 ? '#00d4aa' : v > 60 ? '#6c63ff' : '#8b90a8'), borderColor: AFTER.map(v => v > 80 ? '#00d4aa' : v > 60 ? '#6c63ff' : '#8b90a8'), borderWidth: 1, borderRadius: 4 }] },
+  options: opts()
+});
+</script>
+</body>
+</html>
